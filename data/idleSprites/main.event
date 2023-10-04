@@ -4,28 +4,31 @@
 // 32 30 28 26 24 22 20 18 16 14 12 10 08 06 04 02
 // 31 29 27 25 23 21 19 17 15 13 11 09 07 05 03 01
 
-// When adding sprites, the rules are simple:
-// If it's 16x16, register it in the lowest unused slot.
-// If it's 16x32 or 32x32, register it in the highest unused slots.
+// Adding 16x16s go in the lowest unused slot,
+// Adding 16x32 and 32x32s uses highest slots.
 
-// Periodically (when?) the game will recognize that a slot *is* unused
-// like, mid-chapter, when all enemies of a given class are dead
-// and when it detects this (how?) it will over-ride that slot with a new class
-// or shuffle / pull classes around so that the middle is more clear.
+// The game is, mid-chapter, willing to override a slot if all units
+// that were in that class are dead. 
 
-// In normal circumstances, that means over 30 unique classes
-// Since the game naturally decreases unpromoted classes as promoted ones enter
-// and multiple are map-specific like Ballista/Civilian,
-// the game has only ..80 idles to choose from anyway.
-// It also almost never mixes humans with monsters; so it's easy to have space;
-// such that you can only natively reasonably encounter the issue in Ch 22.
+// When VRAM is full, a class is assigned slots, but the graphics are
+// updated improperly. A class will claim some slots, 
+// and will use whatever graphics are in those slots whether or not
+// its own graphics are actually in that slot.
 
-// But, randomized, only "as promoted increases, unpromoted decreases" is true
-// and the bug's activation is fairly critical - it can make it 
-// extremely hard to tell *if an enemy even exists*
+// In ordinary circumstances, you need 40 or more classes,
+// which the game just doesn't let happen, because it avoids
+// mixing humans with monsters, it limits enemy class variety, etc.
 
-// However, even in context, it's still pretty rare. So the real goal
-// of preventing VRAM overflow is easiest to do by "make it even harder"
+// None of these are things that we get to consider, since we're randomizing.
+// This means that the issue is *far* more likely to occur, 
+// and this is a problem because it can be hard to tell *if an enemy exists*,
+// and what it *is*, which I would argue are *the gameplay* of Fire Emblem.
+
+// However, even in context, it's still pretty rare. But, it comes up,
+// and it's rather critical -- but a proper solution is very hard.
+
+// This is a stop-gap measure more than anything else - by handling these cases,
+// there's free space on the worst case of the worst base game map - ch 22.
 
 // There's a decent number of sprites that can be shrunk without huge losses:
 // 32x32 -> 16x16 Phantom, Bael
